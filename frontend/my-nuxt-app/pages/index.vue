@@ -12,7 +12,6 @@
   import { useFetch } from '#app'
   
   const todos = ref([])
-  
   const { data, error } = await useFetch('http://backend:8080/api/todos')
   
   if (error.value) {

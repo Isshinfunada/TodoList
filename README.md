@@ -1,4 +1,5 @@
 # TodoList
+Contributer: Isshin, Shinon
 
 1. 背景
 プロジェクトの背景、目的、期待される効果、成果を説明します
@@ -29,4 +30,5 @@
       - Circle CI
 
 2. 完成イメージ
+Claude
 https://claude.site/artifacts/203a61a4-4d80-47bd-b1db-609a5802e4c3

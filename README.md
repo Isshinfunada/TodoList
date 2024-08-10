@@ -27,3 +27,6 @@
     - CI
       - Github Action
       - Circle CI
+
+2. 完成イメージ
+https://claude.site/artifacts/203a61a4-4d80-47bd-b1db-609a5802e4c3

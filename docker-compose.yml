@@ -7,3 +7,28 @@ services:
     ports:
       - "3000:3000"
     command: sh -c "yarn install && yarn dev"
+
+  backend:
+    build: ./backend
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgres://user:password@db:5432/todos?sslmode=disable
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16.4-alpine3.20
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: todos
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

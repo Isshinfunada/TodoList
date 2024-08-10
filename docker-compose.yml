@@ -1,0 +1,9 @@
+services:
+  frontend:
+    build: ./frontend/my-nuxt-app
+    volumes:
+      - ./frontend/my-nuxt-app:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    command: sh -c "yarn install && yarn dev"

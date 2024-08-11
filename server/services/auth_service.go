@@ -8,7 +8,6 @@ import (
 	"github.com/Isshinfunada/TodoList/server/models"
 
 	"github.com/dgrijalva/jwt-go"
-	"golang.org/x/crypto/bcrypt"
 )
 
 var jwtKey = []byte("your_secret_key")
@@ -27,7 +26,7 @@ func AuthenticateUser(ctx context.Context, db *models.Queries, email, password s
 		return "", errors.New("ユーザーが見つかりません")
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+	if user.Password != password {
 		return "", errors.New("パスワードが一致しません")
 	}
 

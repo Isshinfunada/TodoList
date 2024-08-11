@@ -30,6 +30,7 @@ services:
       POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
+
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "user"]
       interval: 10s
@@ -38,7 +39,7 @@ services:
 
   migrate:  # インデントを修正
     image: migrate/migrate
-    entrypoint: ["migrate", "-path", "/migrations", "-database", "postgres://user:password@db:5432/todos?sslmode=disable", "up"]
+    command: ["-path", "/migrations", "-database", "postgres://user:password@db:5432/todos?sslmode=disable", "up"]
     volumes:
       - ./server/db/migrations:/migrations
     depends_on:

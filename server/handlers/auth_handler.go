@@ -10,6 +10,19 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+/**
+ * @api {post} /login Authenticate a user
+ * @apiName Login
+ * @apiGroup User
+ * @apiVersion 1.0.0
+ * @apiParam {String} email User's email
+ * @apiParam {String} password User's password
+ * @apiSuccess (200) {String} token Authentication token
+ * @apiError (400) {Object} error Invalid request
+ * @apiError (401) {Object} error Unauthorized
+ * @apiExample {curl} Example usage:
+ *     curl -X POST 'http://localhost:8080/login' -H 'Content-Type: application/json' -d '{"email": "testuser1@example.com", "password": "password1"}'
+ */
 func Login(db *models.Queries) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var credentials struct {

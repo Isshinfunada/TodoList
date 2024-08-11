@@ -30,15 +30,27 @@ services:
       POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
+    healthcheck: # 追加した
+      test: ["CMD-SHELL", "pg_isready -U user -d todos"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   migrate:
     image: migrate/migrate
-    entrypoint: ["sh", "-c", "/wait-for-it.sh db:5432 -- migrate -path /migrations -database postgres://user:password@db:5432/todos?sslmode=disable up"]
+    command: ["-path", "/migrations", "-database", "postgres://user:password@db:5432/todos?sslmode=disable", "up"]
     volumes:
       - ./server/db/migrations:/migrations
       - ./wait-for-it.sh:/wait-for-it.sh
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    entrypoint: ["/wait-for-it.sh", "db:5432", "--", "migrate"]
+
+    # entrypoint: ["sh", "-c", "/wait-for-it.sh db:5432 -- migrate -path /migrations -database postgres://user:password@db:5432/todos?sslmode=disable up"]
+    # volumes:
+    #  - ./server/db/migrations:/migrations
+    # - ./wait-for-it.sh:/wait-for-it.sh
 
 volumes:
   postgres_data:

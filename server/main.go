@@ -1,48 +1,42 @@
 package main
 
 import (
-	"database/sql"
-	"net/http"
+	"context"
+	"log"
 
+	"github.com/Isshinfunada/TodoList/server/config"
+	"github.com/Isshinfunada/TodoList/server/models"
+	"github.com/Isshinfunada/TodoList/server/routes"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
-	_ "github.com/lib/pq"
 )
 
-type Todo struct {
-	ID   int    `json:"id"`
-	Text string `json:"text"`
+func initDB(cfg *config.Config) (*pgxpool.Pool, error) {
+	dbpool, err := pgxpool.New(context.Background(), "postgres://"+cfg.DBUser+":"+cfg.DBPassword+"@"+cfg.DBHost+":"+cfg.DBPort+"/"+cfg.DBName+"?sslmode=disable")
+	if err != nil {
+		return nil, err
+	}
+	return dbpool, nil
 }
 
-var db *sql.DB
-
-func main() {
+func startServer(dbpool *pgxpool.Pool) {
 	e := echo.New()
-
-	var err error
-	db, err = sql.Open("postgres", "postgres://user:password@db:5432/todos?sslmode=disable")
-	if err != nil {
-		e.Logger.Fatal(err)
-	}
-
-	e.GET("/api/todos", getTodos)
-
+	queries := models.New(dbpool)
+	routes.InitRoutes(e, queries)
 	e.Logger.Fatal(e.Start(":8080"))
 }
 
-func getTodos(c echo.Context) error {
-	rows, err := db.Query("SELECT id, text FROM todos")
+func main() {
+	cfg, err := config.LoadConfig()
 	if err != nil {
-		return err
+		log.Fatalf("Could not load config: %v", err)
 	}
-	defer rows.Close()
 
-	todos := []Todo{}
-	for rows.Next() {
-		var todo Todo
-		if err := rows.Scan(&todo.ID, &todo.Text); err != nil {
-			return err
-		}
-		todos = append(todos, todo)
+	dbpool, err := initDB(cfg)
+	if err != nil {
+		log.Fatalf("Could not initialize database: %v", err)
 	}
-	return c.JSON(http.StatusOK, todos)
+	defer dbpool.Close()
+
+	startServer(dbpool)
 }

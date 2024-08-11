@@ -1,17 +1,17 @@
 services:
-  frontend:
-    build: ./frontend/my-nuxt-app
+  client:
+    build: ./client/my-nuxt-app
     volumes:
-      - ./frontend/my-nuxt-app:/app
+      - ./client/my-nuxt-app:/app
       - /app/node_modules
     ports:
       - "3000:3000"
     command: sh -c "yarn install && yarn dev"
 
-  backend:
-    build: ./backend
+  server:
+    build: ./server
     volumes:
-      - ./backend:/app
+      - ./server:/app
     ports:
       - "8080:8080"
     environment:

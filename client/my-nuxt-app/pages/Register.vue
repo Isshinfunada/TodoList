@@ -43,44 +43,43 @@
           Password: password.value
         })
       })
-    })
 
-    if (!response.ok) {
-      throw new Error('登録に失敗しました')
-    }
+      if (!response.ok) {
+        throw new Error('登録に失敗しました')
+      }
 
-    const user = await response.json()
-    console.log('登録成功:', user)
-    // 会員登録成功後、自動的にログイン処理を行う
-    const loginResponse = await fetch('http://localhost:8080/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email: email.value,
-        password: password.value
+      const user = await response.json()
+      console.log('登録成功:', user)
+      // 会員登録成功後、自動的にログイン処理を行う
+      const loginResponse = await fetch('http://localhost:8080/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email.value,
+          password: password.value
+        })
       })
-    })
 
-    // ログインが成功したかどうかの確認
-    if (!loginResponse.ok) {
-      throw new Error('自動ログインに失敗しました')
+      // ログインが成功したかどうかの確認
+      if (!loginResponse.ok) {
+        throw new Error('自動ログインに失敗しました')
+      }
+
+      const loginData = await loginResponse.json()
+      console.log('自動ログイン成功:', loginData.token)
+      
+      // トークンをローカルストレージに保存
+      localStorage.setItem('jwtToken', loginData.token)
+
+      // /home ページにリダイレクト
+      router.push('/home');  // リダイレクト処理
+
+    } catch (error) {
+      console.error('エラー:', error)
     }
-
-    const loginData = await loginResponse.json()
-    console.log('自動ログイン成功:', loginData.token)
-    
-    // トークンをローカルストレージに保存
-    localStorage.setItem('jwtToken', loginData.token)
-
-    // /home ページにリダイレクト
-    router.push('/home');  // リダイレクト処理
-
-  } catch (error) {
-    console.error('エラー:', error)
   }
-}
 </script>
 
 <style scoped>

@@ -21,6 +21,7 @@
   
   <script setup>
   import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
   
   const username = ref('')
   const email = ref('')
@@ -69,6 +70,9 @@
     
     // トークンをローカルストレージに保存（ここでトークンを使用して認証状態を保持できます）
     // localStorage.setItem('token', loginData.token)
+
+    // /home ページにリダイレクト
+    router.push('/home');  // リダイレクト処理
 
 
     } catch (error) {

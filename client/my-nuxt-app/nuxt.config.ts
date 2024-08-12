@@ -1,12 +1,6 @@
-export default {
-  // その他の設定
-  router: {
-    extendRoutes(routes: Array<any>, resolve: Function) {
-      routes.push({
-        name: 'home',
-        path: '/',
-        component: resolve(__dirname, 'pages/Toppage.vue')
-      })
-    }
-  }
-}
+export default defineNuxtConfig({
+  compatibilityDate: '2024-04-03',
+  devtools: { enabled: true },
+  modules: [
+  ],
+})

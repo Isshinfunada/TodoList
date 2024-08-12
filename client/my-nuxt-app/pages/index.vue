@@ -1,4 +1,4 @@
-<<template>
+<template>
   <div class="container">
     <h1>TODOリスト</h1>
     <div class="button-group">

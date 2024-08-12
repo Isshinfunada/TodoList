@@ -29,16 +29,23 @@
       await this.fetchTodos();
     },
     methods: {
-      async fetchTodos() {
-        try {
-          const response = await fetch(`http://localhost:8080/todos/1`); // ユーザーIDを適切に設定
-          if (!response.ok) throw new Error('タスクの取得に失敗しました');
-          this.todos = await response.json();
-        } catch (error) {
-          console.error(error);
-          this.statusMessage = 'タスクの取得に失敗しました';
-        }
-      },
+    async fetchTodos() {
+    const token = localStorage.getItem('token'); // JWTトークンをローカルストレージから取得
+    try {
+    const response = await fetch(`http://localhost:8080/todos`, {
+      headers: {
+        Authorization: `Bearer ${token}` // Authorizationヘッダーにトークンを追加
+      }
+    });
+    if (!response.ok) throw new Error('タスクの取得に失敗しました');
+    this.todos = await response.json();
+  } catch (error) {
+    console.error(error);
+    this.statusMessage = 'タスクの取得に失敗しました';
+  }
+}
+
+,
       addTodo() {
         if (this.newTask.trim() === '') return;
         const newTodo = {

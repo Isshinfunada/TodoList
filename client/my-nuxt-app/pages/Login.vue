@@ -43,7 +43,8 @@
 
           const data = await response.json();
           console.log('ログイン成功:', data.token);
-          // トークンを保存する処理を追加することができます
+        // トークンをローカルストレージに保存
+        localStorage.setItem('jwtToken', data.token)
 
           // /home ページにリダイレクト
           this.$router.push('/home');

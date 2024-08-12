@@ -1,44 +1,47 @@
 <template>
-  <div class="register-container">
-    <h1>会員登録</h1>
-    <form @submit.prevent="register">
-      <div class="form-group">
-        <label for="username">ユーザーネーム</label>
-        <input type="text" id="username" v-model="username" required />
-      </div>
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" v-model="email" required />
-      </div>
-      <div class="form-group">
-        <label for="password">パスワード</label>
-        <input type="password" id="password" v-model="password" required />
-      </div>
-      <button type="submit" class="register-button">登録</button>
-    </form>
-  </div>
-</template>
+    <div class="register-container">
+      <h1>会員登録</h1>
+      <form @submit.prevent="register">
+        <div class="form-group">
+          <label for="username">ユーザーネーム</label>
+          <input type="text" id="username" v-model="username" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" v-model="email" required />
+        </div>
+        <div class="form-group">
+          <label for="password">パスワード</label>
+          <input type="password" id="password" v-model="password" required />
+        </div>
+        <button type="submit" class="register-button">登録</button>
+      </form>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
 
-<script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+  const router = useRouter()
 
-const username = ref('')
-const email = ref('')
-const password = ref('')
-const router = useRouter()
-
-const register = async () => {
-  try {
-    const response = await fetch('http://localhost:8080/users', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        Username: username.value,
-        Email: email.value,
-        Password: password.value
+  
+  const username = ref('')
+  const email = ref('')
+  const password = ref('')
+  
+  const register = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          Username: username.value,
+          Email: email.value,
+          Password: password.value
+        })
       })
     })
 

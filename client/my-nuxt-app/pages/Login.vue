@@ -12,6 +12,8 @@
         </div>
         <button type="submit">ログイン</button>
       </form>
+      <!-- エラーメッセージの表示 -->
+      <div v-if="statusMessage" class="status-message">{{ statusMessage }}</div>
     </div>
   </template>
   
@@ -20,7 +22,8 @@
     data() {
       return {
         email: '',
-        password: ''
+        password: '',
+        statusMessage: '' // エラーメッセージを保存するプロパティ
       };
     },
     methods: {
@@ -50,6 +53,7 @@
           this.$router.push('/home');
         } catch (error) {
           console.error('エラー:', error);
+          this.statusMessage = 'ログインに失敗しました。メールアドレスまたはパスワードが間違っています。';
         }
       }
     }
@@ -93,4 +97,10 @@
   button:hover {
     background-color: #333;
   }
+
+  /* エラーメッセージ用のスタイル */
+.status-message {
+  margin-top: 15px;
+  color: red; /* エラーメッセージを赤色で表示 */
+}
   </style>

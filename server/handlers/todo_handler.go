@@ -81,8 +81,14 @@ func (h *TodoHandler) GetTodos(c echo.Context) error {
  *     }'
  */
 func (h *TodoHandler) CreateTodo(c echo.Context) error {
+	// JWTトークンからユーザーIDを取得
+	userID, err := utils.GetUserIDFromToken(c)
+	if err != nil {
+		log.Printf("Invalid token: %v", err)
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid token"})
+	}
+
 	var req struct {
-		UserID int32  `json:"user_id"`
 		Text   string `json:"text"`
 		Status string `json:"status"`
 	}
@@ -90,8 +96,9 @@ func (h *TodoHandler) CreateTodo(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid input"})
 	}
 
-	todo, err := h.TodoService.CreateTodo(c.Request().Context(), req.UserID, req.Text, req.Status)
+	todo, err := h.TodoService.CreateTodo(c.Request().Context(), int32(userID), req.Text, req.Status)
 	if err != nil {
+		log.Printf("Error in CreateTodo: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to create todo"})
 	}
 

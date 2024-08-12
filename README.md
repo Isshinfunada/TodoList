@@ -15,8 +15,6 @@ Contributer: Isshin, Shinon
   - 機能
     - CRUD操作
     - ステータス管理
-    - 通知機能
-      - UPDATEされたら会員登録したメールアドレスに通知が届く
     - 会員登録
 - 技術構成
   - フロントエンド：Vue（Nuxt.jsというフレームワーク）

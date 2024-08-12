@@ -44,6 +44,9 @@
           const data = await response.json();
           console.log('ログイン成功:', data.token);
           // トークンを保存する処理を追加することができます
+
+          // /home ページにリダイレクト
+          this.$router.push('/home');
         } catch (error) {
           console.error('エラー:', error);
         }

@@ -23,7 +23,7 @@
       return {
         email: '',
         password: '',
-        statusMessage: '' // エラーメッセージを保存するプロパティ
+        statusMessage: ''
       };
     },
     methods: {
@@ -46,10 +46,8 @@
 
           const data = await response.json();
           console.log('ログイン成功:', data.token);
-        // トークンをローカルストレージに保存
         localStorage.setItem('jwtToken', data.token)
 
-          // /home ページにリダイレクト
           this.$router.push('/home');
         } catch (error) {
           console.error('エラー:', error);

@@ -1,10 +1,7 @@
 package config
 
 import (
-	"log"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -16,10 +13,6 @@ type Config struct {
 }
 
 func LoadConfig() (*Config, error) {
-	// .envファイルを読み込みます
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found")
-	}
 
 	config := &Config{
 		DBUser:     getEnv("DB_USER", "user"),

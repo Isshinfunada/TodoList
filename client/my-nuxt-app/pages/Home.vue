@@ -59,7 +59,6 @@ export default {
         console.error(error);
         this.statusMessage = 'タスクの取得に失敗しました';
       }
-      console.log("this.todos:",this.todos);
     },
     async addTodo() {
       if (this.newTask.trim() === '') return;

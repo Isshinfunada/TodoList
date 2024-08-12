@@ -1,4 +1,10 @@
 # TodoList
+## ローカル環境セットアップ
+``` bash
+make start
+```
+
+まだフロントしかデプロイしていないので全部動きません
 https://todo-list-c6s9.vercel.app/
 
 

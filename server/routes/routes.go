@@ -30,4 +30,7 @@ func InitRoutes(e *echo.Echo, db *models.Queries) {
 	// TodoHandler の GetTodos メソッドを呼び出す
 	e.GET("/todos/:user_id", todoHandler.GetTodos)
 	e.POST("/todos", todoHandler.CreateTodo)
+	e.POST("/todos/edit", todoHandler.EditTodo)
+	e.POST("/todos/delete", todoHandler.DeleteTodo)
+	e.POST("/todos/:id/status", todoHandler.UpdateTodoStatus)
 }

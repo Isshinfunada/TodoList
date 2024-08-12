@@ -22,14 +22,14 @@ func (s *TodoService) GetTodos(ctx context.Context, userID int32) ([]models.Todo
 		return nil, err
 	}
 
-	modelTodos := ([]models.Todo)(todos)
-	if modelTodos == nil {
+	// 型アサーションは不要
+	if todos == nil {
 		log.Printf("todos: %#v", todos)
-		log.Printf("Type assertion failed in GetTodos")
-		return nil, errors.New("internal server error")
+		log.Printf("No todos found for user")
+		return nil, nil // エラーではなく空のリストを返す
 	}
 
-	return modelTodos, nil
+	return todos, nil
 }
 
 func (s *TodoService) CreateTodo(ctx context.Context, userID int32, text, status string) (models.Todo, error) {

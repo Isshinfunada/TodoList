@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"log"
-	"math"
 	"net/http"
 	"strconv"
 
 	"github.com/Isshinfunada/TodoList/server/services"
+	"github.com/Isshinfunada/TodoList/server/utils"
 
 	"github.com/labstack/echo/v4"
 )
@@ -31,26 +31,18 @@ type TodoHandler struct {
  * @apiError (400) {Object} error Invalid user ID
  * @apiError (500) {Object} error Failed to fetch todos
  * @apiExample {curl} Example usage:
- *     curl -X GET 'http://localhost:8080/todos/1'
+ *     curl -X GET 'http://localhost:8080/todos/list'
  */
 func (h *TodoHandler) GetTodos(c echo.Context) error {
-	userIDStr := c.Param("user_id")
-	log.Printf("userIDStr: %s", userIDStr)
-	userID, err := strconv.Atoi(userIDStr)
+	// JWTトークンからユーザーIDを取得
+	userID, err := utils.GetUserIDFromToken(c)
 	if err != nil {
-		log.Printf("Invalid user ID: %s, error: %v", userIDStr, err)
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid user ID"})
-	}
-
-	// int32 へのキャストエラーをチェック
-	if int64(userID) > math.MaxInt32 || int64(userID) < math.MinInt32 {
-		log.Printf("User ID out of range: %d", userID)
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "User ID out of range"})
+		log.Printf("Invalid token: %v", err)
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid token"})
 	}
 
 	todos, err := h.TodoService.GetTodos(c.Request().Context(), int32(userID))
 	if err != nil {
-		// エラーログを追加
 		log.Printf("Error in GetTodos: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch todos"})
 	}
@@ -76,7 +68,7 @@ func (h *TodoHandler) GetTodos(c echo.Context) error {
  * @apiError (400) {Object} error Invalid input
  * @apiError (500) {Object} error Failed to create todo
  * @apiExample {curl} Example usage:
- *     curl -X POST 'http://localhost:8080/todos' \
+ *     curl -X POST 'http://localhost:8080/todos/create' \
  *     -H 'Content-Type: application/json' \
  *     -d '{
  *       "user_id": 1,

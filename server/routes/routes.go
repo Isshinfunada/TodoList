@@ -5,6 +5,7 @@ import (
 	"github.com/Isshinfunada/TodoList/server/models"
 	"github.com/Isshinfunada/TodoList/server/services"
 
+	echojwt "github.com/labstack/echo-jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -12,25 +13,31 @@ import (
 func InitRoutes(e *echo.Echo, db *models.Queries) {
 	// CORS設定を追加
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:3000"},       // フロントエンドのオリジン
-		AllowMethods: []string{echo.GET, echo.POST, echo.PUT}, // 許可するHTTPメソッド
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+		AllowOrigins: []string{"http://localhost:3000"},
+		AllowMethods: []string{echo.GET, echo.POST},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 	}))
 
+	// 認証が不要なルート
 	e.POST("/users", handlers.RegisterUser(db))
 	e.POST("/login", handlers.Login(db))
 
-	// TodoHandler のインスタンスを作成
+	// 認証が必要なルート
+	authenticated := e.Group("/todos")
+	authenticated.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey: []byte("your_secret_key"),
+	}))
+
 	todoHandler := handlers.TodoHandler{
 		TodoService: &services.TodoService{
 			Queries: db,
 		},
 	}
 
-	// TodoHandler の GetTodos メソッドを呼び出す
-	e.GET("/todos/:user_id", todoHandler.GetTodos)
-	e.POST("/todos", todoHandler.CreateTodo)
-	e.POST("/todos/edit", todoHandler.EditTodo)
-	e.POST("/todos/delete", todoHandler.DeleteTodo)
-	e.POST("/todos/:id/status", todoHandler.UpdateTodoStatus)
+	// 認証が必要なルートにJWTミドルウェアを適用
+	authenticated.GET("/list", todoHandler.GetTodos)
+	authenticated.POST("/create", todoHandler.CreateTodo)
+	authenticated.POST("/edit", todoHandler.EditTodo)
+	authenticated.POST("/delete", todoHandler.DeleteTodo)
+	authenticated.POST("/:id/status", todoHandler.UpdateTodoStatus)
 }

@@ -1,64 +1,64 @@
 <template>
-    <div class="register-container">
-      <h1>会員登録</h1>
-      <form @submit.prevent="register">
-        <div class="form-group">
-          <label for="username">ユーザーネーム</label>
-          <input type="text" id="username" v-model="username" required />
-        </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" v-model="email" required />
-        </div>
-        <div class="form-group">
-          <label for="password">パスワード</label>
-          <input type="password" id="password" v-model="password" required />
-        </div>
-        <button type="submit" class="register-button">登録</button>
-      </form>
-    </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue'
-  import { useRouter } from 'vue-router'
-  
-  const username = ref('')
-  const email = ref('')
-  const password = ref('')
-  
-  const register = async () => {
-    try {
-      const response = await fetch('http://localhost:8080/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          Username: username.value,
-          Email: email.value,
-          Password: password.value
-        })
-      })
-  
-      if (!response.ok) {
-        throw new Error('登録に失敗しました')
-      }
-  
-      const user = await response.json()
-      console.log('登録成功:', user)
-      // 登録成功後の処理を追加
-      // 会員登録成功後、自動的にログイン処理を行う
-      const loginResponse = await fetch('http://localhost:8080/login', {
-        method: 'POST',
-        headers: {
+  <div class="register-container">
+    <h1>会員登録</h1>
+    <form @submit.prevent="register">
+      <div class="form-group">
+        <label for="username">ユーザーネーム</label>
+        <input type="text" id="username" v-model="username" required />
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" v-model="email" required />
+      </div>
+      <div class="form-group">
+        <label for="password">パスワード</label>
+        <input type="password" id="password" v-model="password" required />
+      </div>
+      <button type="submit" class="register-button">登録</button>
+    </form>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const username = ref('')
+const email = ref('')
+const password = ref('')
+const router = useRouter()
+
+const register = async () => {
+  try {
+    const response = await fetch('http://localhost:8080/users', {
+      method: 'POST',
+      headers: {
         'Content-Type': 'application/json'
-        },
+      },
+      body: JSON.stringify({
+        Username: username.value,
+        Email: email.value,
+        Password: password.value
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error('登録に失敗しました')
+    }
+
+    const user = await response.json()
+    console.log('登録成功:', user)
+    // 会員登録成功後、自動的にログイン処理を行う
+    const loginResponse = await fetch('http://localhost:8080/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
         email: email.value,
-          password: password.value
-        })
+        password: password.value
       })
+    })
 
     // ログインが成功したかどうかの確認
     if (!loginResponse.ok) {
@@ -68,64 +68,63 @@
     const loginData = await loginResponse.json()
     console.log('自動ログイン成功:', loginData.token)
     
-    // トークンをローカルストレージに保存（ここでトークンを使用して認証状態を保持できます）
-    // localStorage.setItem('token', loginData.token)
+    // トークンをローカルストレージに保存
+    localStorage.setItem('jwtToken', loginData.token)
 
     // /home ページにリダイレクト
     router.push('/home');  // リダイレクト処理
 
+  } catch (error) {
+    console.error('エラー:', error)
+  }
+}
+</script>
 
-    } catch (error) {
-      console.error('エラー:', error)
-    }
-  }
-  </script>
-  
-  <style scoped>
-  .register-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  input {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .register-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #000;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .register-button:hover {
-    background-color: #333;
-  }
-  </style>
+<style scoped>
+.register-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.register-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.register-button:hover {
+  background-color: #333;
+}
+</style>

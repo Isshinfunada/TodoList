@@ -7,7 +7,7 @@ import (
 
 	"github.com/Isshinfunada/TodoList/server/models"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 var jwtKey = []byte("your_secret_key")

@@ -37,6 +37,38 @@ func (q *Queries) CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, e
 	return i, err
 }
 
+const deleteTodo = `-- name: DeleteTodo :exec
+DELETE FROM todos WHERE id = $1
+`
+
+func (q *Queries) DeleteTodo(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteTodo, id)
+	return err
+}
+
+const editTodo = `-- name: EditTodo :one
+UPDATE todos SET text = $2, updated_at = NOW() WHERE id = $1 RETURNING id, user_id, text, status, created_at, updated_at
+`
+
+type EditTodoParams struct {
+	ID   int32
+	Text string
+}
+
+func (q *Queries) EditTodo(ctx context.Context, arg EditTodoParams) (Todo, error) {
+	row := q.db.QueryRow(ctx, editTodo, arg.ID, arg.Text)
+	var i Todo
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Text,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const listTodos = `-- name: ListTodos :many
 SELECT id, user_id, text, status, created_at, updated_at FROM todos WHERE user_id = $1
 `
@@ -66,4 +98,27 @@ func (q *Queries) ListTodos(ctx context.Context, userID pgtype.Int4) ([]Todo, er
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateTodoStatus = `-- name: UpdateTodoStatus :one
+UPDATE todos SET status = $2, updated_at = NOW() WHERE id = $1 RETURNING id, user_id, text, status, created_at, updated_at
+`
+
+type UpdateTodoStatusParams struct {
+	ID     int32
+	Status string
+}
+
+func (q *Queries) UpdateTodoStatus(ctx context.Context, arg UpdateTodoStatusParams) (Todo, error) {
+	row := q.db.QueryRow(ctx, updateTodoStatus, arg.ID, arg.Status)
+	var i Todo
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Text,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

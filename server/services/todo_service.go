@@ -32,7 +32,7 @@ func (s *TodoService) GetTodos(ctx context.Context, userID int32) ([]models.Todo
 
 func (s *TodoService) CreateTodo(ctx context.Context, userID int32, text, status string) (models.Todo, error) {
 	return s.Queries.CreateTodo(ctx, models.CreateTodoParams{
-		UserID: pgtype.Int4{Int32: userID}, // Changed this line
+		UserID: pgtype.Int4{Int32: userID, Valid: true},
 		Text:   text,
 		Status: status,
 	})

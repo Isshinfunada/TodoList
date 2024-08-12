@@ -58,6 +58,32 @@ func (h *TodoHandler) GetTodos(c echo.Context) error {
 	return c.JSON(http.StatusOK, todos)
 }
 
+/**
+ * @api {post} /todos Create a new Todo
+ * @apiName CreateTodo
+ * @apiGroup Todo
+ * @apiVersion 1.0.0
+ * @apiBody {Number} user_id ID of the user who owns the todo
+ * @apiBody {String} text Text content of the todo
+ * @apiBody {String} status Status of the todo (e.g., "pending", "completed")
+ * @apiSuccess (201) {Object} todo Created Todo object
+ * @apiSuccess (201) {Number} todo.ID Todo's unique ID
+ * @apiSuccess (201) {Number} todo.UserID ID of the user who owns the todo
+ * @apiSuccess (201) {String} todo.Text Text content of the todo
+ * @apiSuccess (201) {String} todo.Status Status of the todo
+ * @apiSuccess (201) {String} todo.CreatedAt Timestamp when the todo was created
+ * @apiSuccess (201) {String} todo.UpdatedAt Timestamp when the todo was last updated
+ * @apiError (400) {Object} error Invalid input
+ * @apiError (500) {Object} error Failed to create todo
+ * @apiExample {curl} Example usage:
+ *     curl -X POST 'http://localhost:8080/todos' \
+ *     -H 'Content-Type: application/json' \
+ *     -d '{
+ *       "user_id": 1,
+ *       "text": "新しいTODO",
+ *       "status": "pending"
+ *     }'
+ */
 func (h *TodoHandler) CreateTodo(c echo.Context) error {
 	var req struct {
 		UserID int32  `json:"user_id"`

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Isshinfunada/TodoList/server/models"
 	"github.com/Isshinfunada/TodoList/server/services"
 	"github.com/Isshinfunada/TodoList/server/utils"
 
@@ -34,7 +35,6 @@ type TodoHandler struct {
  *     curl -X GET 'http://localhost:8080/todos/list'
  */
 func (h *TodoHandler) GetTodos(c echo.Context) error {
-	// JWTトークンからユーザーIDを取得
 	userID, err := utils.GetUserIDFromToken(c)
 	if err != nil {
 		log.Printf("Invalid token: %v", err)
@@ -45,6 +45,10 @@ func (h *TodoHandler) GetTodos(c echo.Context) error {
 	if err != nil {
 		log.Printf("Error in GetTodos: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch todos"})
+	}
+
+	if todos == nil {
+		todos = []models.Todo{} // 空のスライスを返す
 	}
 
 	return c.JSON(http.StatusOK, todos)

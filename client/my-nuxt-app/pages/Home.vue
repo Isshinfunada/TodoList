@@ -29,23 +29,29 @@
         statusMessage: '',
       };
     },
-    async created() {
-      await this.fetchTodos();
+    mounted() { // mountedフックを使用
+      this.fetchTodos();
     },
     methods: {
         async fetchTodos() {
-            const token = localStorage.getItem('jwtToken'); // JWTトークンをローカルストレージから取得
+            if (typeof localStorage !== 'undefined') { // localStorageが定義されているか確認
+                const token = localStorage.getItem('jwtToken'); // JWTトークンをローカルストレージから取得
+                console.log("Token:", token);
+
         try {
-            const response = await fetch(`http://localhost:8080/todos/list`, {
-              headers: {
-                Authorization: `Bearer ${token}` // Authorizationヘッダーにトークンを追加
-              }
+          const response = await fetch(`http://localhost:8080/todos/list`, {
+                headers: {
+                    Authorization: `Bearer ${token}` // Authorizationヘッダーにトークンを追加
+                }
             });
-                  if (!response.ok) throw new Error('タスクの取得に失敗しました');
-                  this.todos = await response.json();
-                } catch (error) {
-                    console.error(error);
+            if (!response.ok) throw new Error('タスクの取得に失敗しました');
+                this.todos = await response.json();
+            } catch (error) {
+                console.error(error);
                 this.statusMessage = 'タスクの取得に失敗しました';
+            }
+            } else {
+                console.error("localStorage is not available");
             }
         },
       addTodo() {

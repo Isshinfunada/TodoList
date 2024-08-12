@@ -62,3 +62,50 @@
     },
   };
   </script>
+    <style scoped>
+    .todo-main {
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+    .input-group {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+    button {
+      padding: 10px;
+      border: none;
+      background-color: #333;
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .todo-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .buttons button {
+      margin-left: 5px;
+    }
+    .status-message {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f0f0f0;
+      border-radius: 4px;
+    }
+    </style>

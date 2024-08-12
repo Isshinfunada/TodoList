@@ -117,7 +117,7 @@ export default {
           },
           body: JSON.stringify({
             id: todo.ID,
-            text: todo.text
+            text: todo.Text
           })
         });
 
@@ -146,7 +146,7 @@ export default {
             Authorization: `Bearer ${token}`
           },
           body: JSON.stringify({
-            status: todo.status === 'completed' ? 'pending' : 'completed'
+            status: todo.Status === 'completed' ? 'pending' : 'completed'
           })
         });
 
@@ -154,7 +154,7 @@ export default {
           throw new Error('Failed to update todo status');
         }
 
-        todo.status = todo.status === 'completed' ? 'pending' : 'completed';
+        todo.Status = todo.Status === 'completed' ? 'pending' : 'completed';
         this.statusMessage = 'タスクのステータスが変更されました';
       } catch (error) {
         console.error('Error updating todo status:', error);

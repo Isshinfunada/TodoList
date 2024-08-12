@@ -24,7 +24,6 @@ func (s *TodoService) GetTodos(ctx context.Context, userID int32) ([]models.Todo
 
 	// 型アサーションは不要
 	if todos == nil {
-		log.Printf("todos: %#v", todos)
 		log.Printf("No todos found for user")
 		return nil, nil // エラーではなく空のリストを返す
 	}

@@ -28,7 +28,7 @@
   
   const register = async () => {
     try {
-      const response = await fetch('http://server:8080/users', {
+      const response = await fetch('http://localhost:8080/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

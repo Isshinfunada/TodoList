@@ -20,6 +20,7 @@ func initDB(cfg *config.Config) (*pgxpool.Pool, error) {
 }
 
 func startServer(dbpool *pgxpool.Pool) {
+	// log.Println("Server is starting...")
 	e := echo.New()
 	queries := models.New(dbpool)
 	routes.InitRoutes(e, queries)

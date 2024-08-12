@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"log"
+	"math"
 	"net/http"
 	"strconv"
 
@@ -13,14 +15,43 @@ type TodoHandler struct {
 	TodoService *services.TodoService
 }
 
+/**
+ * @api {get} /todos/:user_id Get Todos for a User
+ * @apiName GetTodos
+ * @apiGroup Todo
+ * @apiVersion 1.0.0
+ * @apiParam {Number} user_id User's unique ID
+ * @apiSuccess (200) {Array} todos Array of Todo objects
+ * @apiSuccess (200) {Number} todos.ID Todo's unique ID
+ * @apiSuccess (200) {Number} todos.UserID ID of the user who owns the todo
+ * @apiSuccess (200) {String} todos.Text Text content of the todo
+ * @apiSuccess (200) {String} todos.Status Status of the todo (e.g., "pending", "completed")
+ * @apiSuccess (200) {String} todos.CreatedAt Timestamp when the todo was created
+ * @apiSuccess (200) {String} todos.UpdatedAt Timestamp when the todo was last updated
+ * @apiError (400) {Object} error Invalid user ID
+ * @apiError (500) {Object} error Failed to fetch todos
+ * @apiExample {curl} Example usage:
+ *     curl -X GET 'http://localhost:8080/todos/1'
+ */
 func (h *TodoHandler) GetTodos(c echo.Context) error {
-	userID, err := strconv.Atoi(c.QueryParam("user_id"))
+	userIDStr := c.Param("user_id")
+	log.Printf("userIDStr: %s", userIDStr)
+	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
+		log.Printf("Invalid user ID: %s, error: %v", userIDStr, err)
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid user ID"})
+	}
+
+	// int32 へのキャストエラーをチェック
+	if int64(userID) > math.MaxInt32 || int64(userID) < math.MinInt32 {
+		log.Printf("User ID out of range: %d", userID)
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "User ID out of range"})
 	}
 
 	todos, err := h.TodoService.GetTodos(c.Request().Context(), int32(userID))
 	if err != nil {
+		// エラーログを追加
+		log.Printf("Error in GetTodos: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to fetch todos"})
 	}
 

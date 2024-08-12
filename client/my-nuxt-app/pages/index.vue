@@ -1,7 +1,10 @@
-<template>
+<<template>
   <div class="container">
     <h1>TODOリスト</h1>
-    <nuxt-link to="/register" class="register-button">会員登録</nuxt-link>
+    <div class="button-group">
+      <nuxt-link to="/register" class="register-button">会員登録</nuxt-link>
+      <nuxt-link to="/login" class="login-button">ログイン</nuxt-link>
+    </div>
   </div>
 </template>
 
@@ -24,7 +27,12 @@ h1 {
   margin-bottom: 20px;
 }
 
-.register-button {
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.register-button, .login-button {
   padding: 10px 20px;
   background-color: #000;
   color: #fff;
@@ -33,7 +41,7 @@ h1 {
   transition: background-color 0.3s;
 }
 
-.register-button:hover {
+.register-button:hover, .login-button:hover {
   background-color: #333;
 }
 </style>

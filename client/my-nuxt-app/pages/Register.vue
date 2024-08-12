@@ -47,6 +47,30 @@
       const user = await response.json()
       console.log('登録成功:', user)
       // 登録成功後の処理を追加
+      // 会員登録成功後、自動的にログイン処理を行う
+      const loginResponse = await fetch('http://localhost:8080/login', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json'
+        },
+      body: JSON.stringify({
+        email: email.value,
+          password: password.value
+        })
+      })
+
+    // ログインが成功したかどうかの確認
+    if (!loginResponse.ok) {
+      throw new Error('自動ログインに失敗しました')
+    }
+
+    const loginData = await loginResponse.json()
+    console.log('自動ログイン成功:', loginData.token)
+    
+    // トークンをローカルストレージに保存（ここでトークンを使用して認証状態を保持できます）
+    // localStorage.setItem('token', loginData.token)
+
+
     } catch (error) {
       console.error('エラー:', error)
     }

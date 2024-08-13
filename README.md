@@ -28,7 +28,7 @@ Contributer: Isshin, Shinon
   - バックエンド：Go（GoのEchoというフレームワーク）
     - DBとの接続：sqlc
   - DB：PostgreSQL
-  - コンテナ：Docker
+  - コンテナ：Docker（Orbstack）
   - デプロイ
     - フロントエンド：Vercel
     - バックエンド：Google Cloud Platform

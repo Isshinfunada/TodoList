@@ -1,0 +1,2 @@
+# Ignore tfvars files containing sensitive data
+terraform.tfvars

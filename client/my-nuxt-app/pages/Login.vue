@@ -99,6 +99,6 @@
   /* エラーメッセージ用のスタイル */
 .status-message {
   margin-top: 15px;
-  color: red; /* エラーメッセージを赤色で表示 */
+  color: red;
 }
   </style>

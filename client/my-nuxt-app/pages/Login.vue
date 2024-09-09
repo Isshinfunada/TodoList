@@ -29,7 +29,8 @@
     methods: {
       async handleLogin() {
         try {
-          const response = await fetch('http://localhost:8080/login', {
+          const apiUrl = import.meta.env.VITE_API_URL;
+          const response = await fetch(`${apiUrl}/todos/login`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'

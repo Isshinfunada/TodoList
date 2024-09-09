@@ -50,7 +50,8 @@
 
       const user = await response.json()
       console.log('登録成功:', user)
-      const loginResponse = await fetch('http://localhost:8080/login', {
+        const apiUrl = import.meta.env.VITE_API_URL;
+        const loginResponse = await fetch(`${apiUrl}/todos/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

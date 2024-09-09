@@ -47,7 +47,8 @@ export default {
       }
 
       try {
-        const response = await fetch(`http://localhost:8080/todos/list`, {
+        const apiUrl = import.meta.env.VITE_API_URL;
+        const response = await fetch(`${apiUrl}/todos/list`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

@@ -40,6 +40,8 @@ Contributer: Isshin, Shinon
     - CI
       - Github Action
       - Circle CI
+    - 認証
+      -Firebase Authentication
 
 2. 完成イメージ
 Claude

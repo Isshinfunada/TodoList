@@ -41,9 +41,8 @@ GCPは使ってないです^ ^
     - CI *未搭載(2024/09/26) 
       - Github Action
       - Circle CI
-    - 認証 *搭載中(2024/09/26)
-      -2024/09/26現在は、jwtトークンでどのユーザーか判別するクソ仕様です 
-      -Firebase Authentication
+    - 認証 
+      -2024/09/26現在は、jwtトークンでどのユーザーか判別するクソ仕様です。Firebase Authenticationに移行中。
 
 2. 完成イメージ
 Claude

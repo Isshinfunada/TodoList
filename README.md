@@ -29,18 +29,18 @@ Contributer: Isshin, Shinon
     - DBとの接続：sqlc
   - DB：PostgreSQL
   - コンテナ：Docker（Orbstack）
-  - デプロイ
+  - デプロイ *途中(2024/09/26) 
     - フロントエンド：Vercel
-    - バックエンド：Google Cloud Platform
+    - バックエンド：Heroku
   - IaC(Infrastructure as Code)
     - Terraform：GCPをコードで設定できる
   - プロジェクト管理
     - Git、Github
   - オプション
-    - CI
+    - CI *未搭載(2024/09/26) 
       - Github Action
       - Circle CI
-    - 認証
+    - 認証 *搭載中(2024/09/26) 
       -Firebase Authentication
 
 2. 完成イメージ

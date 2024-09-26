@@ -11,6 +11,7 @@ https://todo-list-c6s9.vercel.app/
 
 Contributer: Isshin, Shinon
 
+GCPは使ってないです^ ^
 ![image](https://github.com/user-attachments/assets/9fc2bf3e-80aa-4f34-a1c6-add3ab0b9138)
 
 

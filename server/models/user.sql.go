@@ -10,32 +10,47 @@ import (
 )
 
 const createUser = `-- name: CreateUser :exec
-INSERT INTO users (username, email, password) VALUES ($1,$2,$3)
+INSERT INTO users (username, email, password, firebase_uid) VALUES ($1, $2, $3, $4)
 `
 
 type CreateUserParams struct {
-	Username string
-	Email    string
-	Password string
+	Username    string
+	Email       string
+	Password    string
+	FirebaseUid string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
-	_, err := q.db.Exec(ctx, createUser, arg.Username, arg.Email, arg.Password)
+	_, err := q.db.Exec(ctx, createUser,
+		arg.Username,
+		arg.Email,
+		arg.Password,
+		arg.FirebaseUid,
+	)
 	return err
 }
 
-const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, username, email, password FROM users WHERE email = $1
+const getUserByFirebaseUID = `-- name: GetUserByFirebaseUID :one
+SELECT id, username, email, password, firebase_uid FROM users WHERE firebase_uid = $1
 `
 
-func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
-	row := q.db.QueryRow(ctx, getUserByEmail, email)
-	var i User
+type GetUserByFirebaseUIDRow struct {
+	ID          int32
+	Username    string
+	Email       string
+	Password    string
+	FirebaseUid string
+}
+
+func (q *Queries) GetUserByFirebaseUID(ctx context.Context, firebaseUid string) (GetUserByFirebaseUIDRow, error) {
+	row := q.db.QueryRow(ctx, getUserByFirebaseUID, firebaseUid)
+	var i GetUserByFirebaseUIDRow
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
 		&i.Email,
 		&i.Password,
+		&i.FirebaseUid,
 	)
 	return i, err
 }

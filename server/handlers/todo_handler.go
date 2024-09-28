@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
+	"firebase.google.com/go/auth"
 	"github.com/Isshinfunada/TodoList/server/models"
 	"github.com/Isshinfunada/TodoList/server/services"
-	"github.com/Isshinfunada/TodoList/server/utils"
 
 	"github.com/labstack/echo/v4"
 )
@@ -17,11 +17,10 @@ type TodoHandler struct {
 }
 
 /**
- * @api {get} /todos/:user_id Get Todos for a User
+ * @api {get} /todos/list Get Todos for the authenticated user
  * @apiName GetTodos
  * @apiGroup Todo
  * @apiVersion 1.0.0
- * @apiParam {Number} user_id User's unique ID
  * @apiSuccess (200) {Array} todos Array of Todo objects
  * @apiSuccess (200) {Number} todos.ID Todo's unique ID
  * @apiSuccess (200) {Number} todos.UserID ID of the user who owns the todo
@@ -29,15 +28,15 @@ type TodoHandler struct {
  * @apiSuccess (200) {String} todos.Status Status of the todo (e.g., "pending", "completed")
  * @apiSuccess (200) {String} todos.CreatedAt Timestamp when the todo was created
  * @apiSuccess (200) {String} todos.UpdatedAt Timestamp when the todo was last updated
- * @apiError (400) {Object} error Invalid user ID
+ * @apiError (401) {Object} error Invalid token
  * @apiError (500) {Object} error Failed to fetch todos
  * @apiExample {curl} Example usage:
- *     curl -X GET 'http://localhost:8080/todos/list'
+ *     curl -X GET 'http://localhost:8080/todos/list' -H 'Authorization: Bearer <firebase_token>'
  */
 func (h *TodoHandler) GetTodos(c echo.Context) error {
-	userID, err := utils.GetUserIDFromToken(c)
+	token := c.Get("user").(*auth.Token)
+	userID, err := strconv.Atoi(token.UID)
 	if err != nil {
-		log.Printf("Invalid token: %v", err)
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid token"})
 	}
 

@@ -10,8 +10,10 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@firebasegen/default": "link:generated/javascript/default",
     "@pinia/nuxt": "^0.5.4",
     "firebase": "^10.13.1",
+    "firebaseui": "^6.1.0",
     "nuxt": "^3.12.4",
     "pinia": "^2.2.2",
     "vue": "latest",

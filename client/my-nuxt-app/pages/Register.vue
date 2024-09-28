@@ -1,80 +1,45 @@
 <template>
-    <div class="register-container">
-      <h1>会員登録</h1>
-      <form @submit.prevent="register">
-        <div class="form-group">
-          <label for="username">ユーザーネーム</label>
-          <input type="text" id="username" v-model="username" required />
-        </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" v-model="email" required />
-        </div>
-        <div class="form-group">
-          <label for="password">パスワード</label>
-          <input type="password" id="password" v-model="password" required />
-        </div>
-        <button type="submit" class="register-button">登録</button>
-      </form>
-    </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue'
-  import { useRouter } from 'vue-router'
+  <div class="register-container">
+    <h1>会員登録</h1>
+    <client-only>
+      <div id="firebaseui-auth-container"></div>
+    </client-only>
+  </div>
+</template>
 
-  const router = useRouter()
 
-  
-  const username = ref('')
-  const email = ref('')
-  const password = ref('')
-  
-  const register = async () => {
-    try {
-      const response = await fetch('http://localhost:8080/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          Username: username.value,
-          Email: email.value,
-          Password: password.value
-        })
-      })
+<script setup>
+import { onMounted } from 'vue'
+import { useNuxtApp } from '#app'
+import { EmailAuthProvider, GoogleAuthProvider } from 'firebase/auth'
 
-      if (!response.ok) {
-        throw new Error('登録に失敗しました')
-      }
+const { $firebaseAuth } = useNuxtApp()
 
-      const user = await response.json()
-      console.log('登録成功:', user)
-      const loginResponse = await fetch('http://localhost:8080/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: email.value,
-          password: password.value
-        })
-      })
+onMounted(async () => {
+  try {
+    // 動的インポートで firebaseui を読み込む
+    const firebaseuiModule = await import('firebaseui')
+    const firebaseui = firebaseuiModule.default || firebaseuiModule
 
-      if (!loginResponse.ok) {
-        throw new Error('自動ログインに失敗しました')
-      }
+    // firebaseui の CSS をインポート
+    await import('firebaseui/dist/firebaseui.css')
 
-      const loginData = await loginResponse.json()
-      console.log('自動ログイン成功:', loginData.token)
-      
-      localStorage.setItem('jwtToken', loginData.token)
-      router.push('/home'); 
-
-    } catch (error) {
-      console.error('エラー:', error)
+    const uiConfig = {
+      signInSuccessUrl: '/home',
+      signInOptions: [
+        EmailAuthProvider.PROVIDER_ID,
+        GoogleAuthProvider.PROVIDER_ID,
+      ],
+      // その他のオプション（必要に応じて追加）
     }
+
+    // 既にAuthUIインスタンスが存在する場合は再利用する
+    let ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI($firebaseAuth)
+    ui.start('#firebaseui-auth-container', uiConfig)
+  } catch (error) {
+    console.error('FirebaseUIの初期化に失敗しました:', error)
   }
+})
 </script>
 
 <style scoped>
@@ -90,38 +55,5 @@
 h1 {
   text-align: center;
   margin-bottom: 20px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-input {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.register-button {
-  width: 100%;
-  padding: 10px;
-  background-color: #000;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.register-button:hover {
-  background-color: #333;
 }
 </style>

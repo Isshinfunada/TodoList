@@ -18,8 +18,9 @@ type Todo struct {
 }
 
 type User struct {
-	ID       int32
-	Username string
-	Email    string
-	Password string
+	ID          int32
+	FirebaseUid string
+	Username    string
+	Email       string
+	Password    string
 }

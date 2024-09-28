@@ -20,7 +20,7 @@ func InitRoutes(e *echo.Echo, db *models.Queries, authClient *auth.Client) {
 	}))
 
 	// 認証が不要なルート
-	e.POST("/users", handlers.RegisterUser(db))
+	e.POST("/users", handlers.RegisterUser(db, authClient))
 	e.POST("/login", handlers.Login(authClient))
 
 	// 認証が必要なルート

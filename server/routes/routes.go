@@ -1,12 +1,15 @@
 package routes
 
 import (
+	"context"
+	"net/http"
+	"strings"
+
 	"github.com/Isshinfunada/TodoList/server/handlers"
 	"github.com/Isshinfunada/TodoList/server/models"
 	"github.com/Isshinfunada/TodoList/server/services"
 
 	"firebase.google.com/go/auth"
-	echojwt "github.com/labstack/echo-jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -25,9 +28,24 @@ func InitRoutes(e *echo.Echo, db *models.Queries, authClient *auth.Client) {
 
 	// 認証が必要なルート
 	authenticated := e.Group("/todos")
-	authenticated.Use(echojwt.WithConfig(echojwt.Config{
-		SigningKey: []byte("your_secret_key"),
-	}))
+	authenticated.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			authHeader := c.Request().Header.Get("Authorization")
+			idToken := strings.TrimPrefix(authHeader, "Bearer ")
+
+			if idToken == "" {
+				return c.JSON(http.StatusBadRequest, map[string]string{"error": "トークンが提供されていません"})
+			}
+
+			token, err := authClient.VerifyIDToken(context.Background(), idToken)
+			if err != nil {
+				return c.JSON(http.StatusUnauthorized, map[string]string{"error": "無効なトークン"})
+			}
+
+			c.Set("user", token)
+			return next(c)
+		}
+	})
 
 	todoHandler := handlers.TodoHandler{
 		TodoService: &services.TodoService{
@@ -35,7 +53,7 @@ func InitRoutes(e *echo.Echo, db *models.Queries, authClient *auth.Client) {
 		},
 	}
 
-	// 認証が必要なルートにJWTミドルウェアを適用
+	// 認証が必要なルートにFirebase認証ミドルウェアを適用
 	authenticated.GET("/list", todoHandler.GetTodos)
 	authenticated.POST("/create", todoHandler.CreateTodo)
 	authenticated.POST("/edit", todoHandler.EditTodo)

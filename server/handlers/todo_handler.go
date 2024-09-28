@@ -8,7 +8,6 @@ import (
 	"firebase.google.com/go/auth"
 	"github.com/Isshinfunada/TodoList/server/models"
 	"github.com/Isshinfunada/TodoList/server/services"
-	"github.com/Isshinfunada/TodoList/server/utils"
 
 	"github.com/labstack/echo/v4"
 )

@@ -14,3 +14,9 @@ DELETE FROM todos WHERE id = $1;
 
 -- name: UpdateTodoStatus :one
 UPDATE todos SET status = $2, updated_at = NOW() WHERE id = $1 RETURNING id, user_id, text, status, created_at, updated_at;
+
+-- name: GetTodoByID :one
+SELECT id, user_id, text, status, created_at, updated_at
+FROM todos
+WHERE id = $1
+LIMIT 1;

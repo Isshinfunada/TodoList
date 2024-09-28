@@ -2,66 +2,105 @@ package services
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 
 	"github.com/Isshinfunada/TodoList/server/models"
-	"github.com/jackc/pgx"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
+// TodoServiceInterface は TodoService のインターフェースです。
+type TodoServiceInterface interface {
+	GetTodos(ctx context.Context, firebaseUID string) ([]models.Todo, error)
+	GetTodoByID(ctx context.Context, id int32) (models.Todo, error)
+	CreateTodo(ctx context.Context, firebaseUID string, text, status string) (models.Todo, error)
+	EditTodo(ctx context.Context, id int32, text string) (models.Todo, error)
+	DeleteTodo(ctx context.Context, id int32) error
+	UpdateTodoStatus(ctx context.Context, id int32, status string) (models.Todo, error)
+}
+
+// TodoService はTodo関連のビジネスロジックを提供します。
 type TodoService struct {
 	Queries *models.Queries
 }
 
-func (s *TodoService) GetTodos(ctx context.Context, userID int32) ([]models.Todo, error) {
-	todos, err := s.Queries.ListTodos(ctx, pgtype.Int4{Int32: userID, Valid: true})
+// NewTodoService は新しい TodoService を初期化します。
+func NewTodoService(q *models.Queries) *TodoService {
+	return &TodoService{Queries: q}
+}
+
+// GetTodos はfirebaseUIDに基づいてTodosを取得します。
+func (s *TodoService) GetTodos(ctx context.Context, firebaseUID string) ([]models.Todo, error) {
+	todos, err := s.Queries.ListTodos(ctx, firebaseUID)
 	if err != nil {
 		log.Printf("Error in ListTodos: %v", err)
 		return nil, err
 	}
 
-	// 型アサーションは不要
+	// todos が nil の場合、空のスライスを返す
 	if todos == nil {
-		log.Printf("No todos found for user")
-		return nil, nil // エラーではなく空のリストを返す
+		log.Println("No todos found for user")
+		return []models.Todo{}, nil
 	}
 
 	return todos, nil
 }
 
-func (s *TodoService) CreateTodo(ctx context.Context, userID int32, text, status string) (models.Todo, error) {
-	return s.Queries.CreateTodo(ctx, models.CreateTodoParams{
-		UserID: pgtype.Int4{Int32: userID, Valid: true},
+// GetTodoByID は特定のTodoを取得します。
+func (s *TodoService) GetTodoByID(ctx context.Context, id int32) (models.Todo, error) {
+	todo, err := s.Queries.GetTodoByID(ctx, id)
+	if err != nil {
+		log.Printf("Error in GetTodoByID: %v", err)
+		return models.Todo{}, err
+	}
+	return todo, nil
+}
+
+// CreateTodo は新しいTodoを作成します。
+func (s *TodoService) CreateTodo(ctx context.Context, firebaseUID string, text, status string) (models.Todo, error) {
+	todo, err := s.Queries.CreateTodo(ctx, models.CreateTodoParams{
+		UserID: firebaseUID,
 		Text:   text,
 		Status: status,
 	})
+	if err != nil {
+		log.Printf("Error in CreateTodo: %v", err)
+		return models.Todo{}, err
+	}
+	return todo, nil
 }
 
+// EditTodo は既存のTodoを編集します。
 func (s *TodoService) EditTodo(ctx context.Context, id int32, text string) (models.Todo, error) {
-	return s.Queries.EditTodo(ctx, models.EditTodoParams{
+	todo, err := s.Queries.EditTodo(ctx, models.EditTodoParams{
 		ID:   id,
 		Text: text,
 	})
+	if err != nil {
+		log.Printf("Error in EditTodo: %v", err)
+		return models.Todo{}, err
+	}
+	return todo, nil
 }
+
+// DeleteTodo はTodoを削除します。
 func (s *TodoService) DeleteTodo(ctx context.Context, id int32) error {
 	err := s.Queries.DeleteTodo(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete todo: %w", err) // エラーメッセージをラップ
+		log.Printf("Error deleting todo ID %d: %v", id, err)
+		return fmt.Errorf("failed to delete todo: %w", err)
 	}
-
-	// 削除された行数が0の場合は、TODOが存在しなかったと判断
-	if err == pgx.ErrNoRows {
-		return errors.New("todo not found")
-	}
-
 	return nil
 }
 
+// UpdateTodoStatus はTodoのステータスを更新します。
 func (s *TodoService) UpdateTodoStatus(ctx context.Context, id int32, status string) (models.Todo, error) {
-	return s.Queries.UpdateTodoStatus(ctx, models.UpdateTodoStatusParams{
+	todo, err := s.Queries.UpdateTodoStatus(ctx, models.UpdateTodoStatusParams{
 		ID:     id,
 		Status: status,
 	})
+	if err != nil {
+		log.Printf("Error in UpdateTodoStatus: %v", err)
+		return models.Todo{}, err
+	}
+	return todo, nil
 }

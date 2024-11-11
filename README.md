@@ -11,8 +11,6 @@ https://todo-list-c6s9.vercel.app/
 
 Contributer: Isshin, Shinon
 
-GCPは使ってないです
-
 
 
 1. 背景

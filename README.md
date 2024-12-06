@@ -4,18 +4,6 @@
 make start
 ```
 
-まだフロントしかデプロイしていないので機能が動きません。ローカルでは動きます。
-
-https://todo-list-c6s9.vercel.app/
-
-
-Contributer: Isshin, Shinon
-
-GCPは使ってないです^ ^
-![image](https://github.com/user-attachments/assets/9fc2bf3e-80aa-4f34-a1c6-add3ab0b9138)
-
-
-
 1. 背景
 プロジェクトの背景、目的、期待される効果、成果を説明します
 - 背景：技術力向上
@@ -30,21 +18,19 @@ GCPは使ってないです^ ^
     - DBとの接続：sqlc
   - DB：PostgreSQL
   - コンテナ：Docker（Orbstack）
-  - デプロイ *途中(2024/09/26) 
+  - デプロイ *途中
     - フロントエンド：Vercel
     - バックエンド：Heroku
   - IaC(Infrastructure as Code)
-    - Terraform：GCPをコードで設定できる
+    - Terraform
   - プロジェクト管理
     - Git、Github
   - オプション
-    - CI *未搭載(2024/09/26) 
+    - CI *未搭載
       - Github Action
       - Circle CI
     - 認証 
 
-    -2024/09/26現在は、jwtトークンでどのユーザーか判別するクソ仕様です。Firebase Authenticationに移行中。
-
-2. 完成イメージ
+2. 完成イメージ（プロトタイプ）
 Claude
 https://claude.site/artifacts/203a61a4-4d80-47bd-b1db-609a5802e4c3

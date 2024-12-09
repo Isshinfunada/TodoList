@@ -9,12 +9,17 @@ import (
 	"github.com/jackc/pgconn"
 )
 
-func RegisterUser(ctx context.Context, db *models.Queries, user *models.User) error {
+type UserQueries interface {
+	CreateUser(ctx context.Context, arg models.CreateUserParams) error
+}
+
+func RegisterUser(ctx context.Context, db UserQueries, user *models.User) error {
 	// ユーザーを登録
 	params := models.CreateUserParams{
-		Username: user.Username,
-		Email:    user.Email,
-		Password: user.Password,
+		Username:    user.Username,
+		Email:       user.Email,
+		Password:    user.Password,
+		FirebaseUid: user.FirebaseUid,
 	}
 	err := db.CreateUser(ctx, params)
 	if err != nil {

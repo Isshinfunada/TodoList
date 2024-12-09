@@ -1,5 +1,5 @@
 -- name: CreateUser :exec
-INSERT INTO users (username, email, password) VALUES ($1,$2,$3);
+INSERT INTO users (username, email, password, firebase_uid) VALUES ($1, $2, $3, $4);
 
--- name: GetUserByEmail :one
-SELECT id, username, email, password FROM users WHERE email = $1;
+-- name: GetUserByFirebaseUID :one
+SELECT id, username, email, password, firebase_uid FROM users WHERE firebase_uid = $1;

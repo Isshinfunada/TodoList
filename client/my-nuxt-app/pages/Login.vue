@@ -1,104 +1,80 @@
 <template>
-    <div class="login-container">
-      <h2>ログイン</h2>
-      <form @submit.prevent="handleLogin">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" v-model="email" required />
-        </div>
-        <div class="form-group">
-          <label for="password">パスワード</label>
-          <input type="password" v-model="password" required />
-        </div>
-        <button type="submit">ログイン</button>
-      </form>
-      <!-- エラーメッセージの表示 -->
-      <div v-if="statusMessage" class="status-message">{{ statusMessage }}</div>
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        email: '',
-        password: '',
-        statusMessage: ''
-      };
-    },
-    methods: {
-      async handleLogin() {
-        try {
-          const response = await fetch('http://localhost:8080/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              email: this.email,
-              password: this.password
-            })
-          });
+  <div class="login-container">
+    <h2>ログイン</h2>
+    <client-only>
+      <div id="firebaseui-auth-container"></div>
+    </client-only>
+    <!-- エラーメッセージの表示 -->
+    <div v-if="statusMessage" class="status-message">{{ statusMessage }}</div>
+  </div>
+</template>
 
-          if (!response.ok) {
-            throw new Error('ログインに失敗しました');
+<script setup>
+import { onMounted, ref } from 'vue'
+import { useNuxtApp } from '#app'
+import { EmailAuthProvider, GoogleAuthProvider } from 'firebase/auth'
+
+const { $firebaseAuth } = useNuxtApp()
+const statusMessage = ref('')
+
+onMounted(async () => {
+  try {
+    // 動的インポートで firebaseui を読み込む
+    const firebaseuiModule = await import('firebaseui')
+    const firebaseui = firebaseuiModule.default || firebaseuiModule
+
+    // firebaseui の CSS をインポート
+    await import('firebaseui/dist/firebaseui.css')
+
+    const uiConfig = {
+      signInSuccessUrl: '/home',
+      signInOptions: [
+        EmailAuthProvider.PROVIDER_ID,
+        GoogleAuthProvider.PROVIDER_ID,
+      ],
+      callbacks: {
+        signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+          // ユーザーが正常にサインインした場合の処理
+          return true // 自動的にリダイレクトを続行
+        },
+        uiShown: function() {
+          // FirebaseUI ウィジェットが表示された際の処理
+          const loader = document.getElementById('loader')
+          if (loader) {
+            loader.style.display = 'none'
           }
-
-          const data = await response.json();
-          console.log('ログイン成功:', data.token);
-        localStorage.setItem('jwtToken', data.token)
-
-          this.$router.push('/home');
-        } catch (error) {
-          console.error('エラー:', error);
-          this.statusMessage = 'ログインに失敗しました。メールアドレスまたはパスワードが間違っています。';
         }
-      }
+      },
+      signInFlow: 'popup'
     }
-  };
-  </script>
-  
-  <style scoped>
-  .login-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  input {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-  }
-  
-  button {
-    width: 100%;
-    padding: 10px;
-    background-color: #000;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #333;
-  }
 
-  /* エラーメッセージ用のスタイル */
+    // 既にAuthUIインスタンスが存在する場合は再利用する
+    let ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI($firebaseAuth)
+    ui.start('#firebaseui-auth-container', uiConfig)
+  } catch (error) {
+    console.error('FirebaseUIの初期化に失敗しました:', error)
+    statusMessage.value = 'ログインに失敗しました。再度お試しください。'
+  }
+})
+</script>
+
+<style scoped>
+.login-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* エラーメッセージ用のスタイル */
 .status-message {
   margin-top: 15px;
   color: red;
 }
-  </style>
+</style>

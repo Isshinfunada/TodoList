@@ -1,23 +1,27 @@
 package main
 
 import (
-	"context"
+	"database/sql"
 	"testing"
 
+	firebase "firebase.google.com/go"
 	"github.com/Isshinfunada/TodoList/server/config"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
-// MockPgxPool is a mock of pgxpool.Pool
-type MockPgxPool struct {
+// MockDB is a mock of sql.DB
+type MockDB struct {
 	mock.Mock
-	pgxpool.Pool // pgxpool.Poolを埋め込む
+	DB *sql.DB
 }
 
-func (m *MockPgxPool) Close(ctx context.Context) error {
+func (m *MockDB) Close() error {
 	m.Called()
+	return nil
+}
+
+func (m *MockDB) Ping() error {
 	return nil
 }
 
@@ -30,13 +34,18 @@ func TestInitDB(t *testing.T) {
 		DBPort:     "5432",
 	}
 
-	dbpool, err := initDB(cfg)
+	db, err := initDB(cfg)
 	assert.NoError(t, err)
-	assert.NotNil(t, dbpool)
+	assert.NotNil(t, db)
 }
 
-// func TestStartServer(t *testing.T) {
-// 	mockPool := new(MockPgxPool)
-// 	startServer(mockPool)
-// 	mockPool.AssertExpectations(t)
-// }
+func TestStartServer(t *testing.T) {
+	mockDB := &MockDB{DB: &sql.DB{}}
+	mockDB.On("Close").Return(nil)
+
+	// Firebaseのモックを作成
+	mockFirebaseApp := &firebase.App{}
+
+	startServer(mockDB.DB, mockFirebaseApp)
+	mockDB.AssertExpectations(t)
+}

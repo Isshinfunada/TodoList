@@ -3,46 +3,26 @@ package services
 import (
 	"context"
 	"errors"
-	"time"
 
 	"github.com/Isshinfunada/TodoList/server/models"
-
-	"github.com/golang-jwt/jwt/v4"
 )
 
-var jwtKey = []byte("your_secret_key")
-
-type Claims struct {
-	UserID int `json:"user_id"`
-	jwt.StandardClaims
-}
-
-func AuthenticateUser(ctx context.Context, db *models.Queries, email, password string) (string, error) {
-	user, err := db.GetUserByEmail(ctx, email)
+func AuthenticateUser(ctx context.Context, db *models.Queries, firebaseUID string) (*models.User, error) {
+	row, err := db.GetUserByFirebaseUID(ctx, firebaseUID)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	if user == (models.User{}) {
-		return "", errors.New("ユーザーが見つかりません")
-	}
-
-	if user.Password != password {
-		return "", errors.New("パスワードが一致しません")
+	if row == (models.GetUserByFirebaseUIDRow{}) {
+		return nil, errors.New("ユーザーが見つかりません")
 	}
 
-	expirationTime := time.Now().Add(24 * time.Hour)
-	claims := &Claims{
-		UserID: int(user.ID),
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expirationTime.Unix(),
-		},
+	user := models.User{
+		ID:          row.ID,
+		Username:    row.Username,
+		Email:       row.Email,
+		Password:    row.Password,
+		FirebaseUid: row.FirebaseUid,
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtKey)
-	if err != nil {
-		return "", err
-	}
-
-	return tokenString, nil
+	return &user, nil
 }
